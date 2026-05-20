@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import styles from '../../css/sidebar.module.css';
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -38,7 +39,7 @@ function NavLinks({ onNavigate, className = "" }: NavLinksProps) {
             <Link
               href={href}
               onClick={onNavigate}
-              className={`nav-link ${isActive ? "active" : ""}`}
+              className={`nav-link ${isActive ? styles.activeLink : styles.inactiveLink}`}
             >
               {label}
             </Link>
@@ -71,7 +72,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
     <div className="d-flex min-vh-100 w-100">
       {/* Mobile: faixa fixa + offcanvas */}
       <div
-        className="app-sidebar-rail d-md-none position-fixed top-0 start-0 bottom-0 bg-body-tertiary border-end d-flex flex-column align-items-center py-3 gap-2"
+        className={`app-sidebar-rail d-md-none position-fixed top-0 start-0 bottom-0 ${styles.mobileSidebar} border-end d-flex flex-column align-items-center py-3 gap-2`}
         style={{ width: MOBILE_RAIL_WIDTH, zIndex: 1040 }}
       >
         <button
@@ -87,7 +88,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       </div>
 
       <div
-        className="offcanvas offcanvas-start d-md-none text-bg-light"
+        className="offcanvas offcanvas-start d-md-none"
         tabIndex={-1}
         id="sidebarOffcanvas"
         aria-labelledby="sidebarOffcanvasLabel"
@@ -110,7 +111,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
       {/* Desktop: sidebar fixo e recolhível */}
       <aside
-        className="d-none d-md-flex flex-column flex-shrink-0 border-end bg-body-tertiary"
+        className={`d-none d-md-flex flex-column flex-shrink-0 border-end ${styles.desktopSidebar}`}
         style={{
           width: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
           transition: "width 0.2s ease-in-out",
@@ -118,7 +119,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       >
         <div className="d-flex align-items-center gap-2 p-3 border-bottom">
           {!collapsed && (
-            <span className="fw-semibold text-truncate flex-grow-1">
+            <span className={styles.sidebarTitle}>
               Gestão de Veículos
             </span>
           )}

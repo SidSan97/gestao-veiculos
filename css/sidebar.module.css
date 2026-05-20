@@ -1,0 +1,21 @@
+.mobileSidebar {
+ background-color: var(--ds-background-neutral-bold);
+}
+
+.desktopSidebar {
+ background-color: var(--ds-background-neutral-bold);
+ color: var(--ds-background-accent-gray-subtlest);
+}
+
+.activeLink {
+ color: var(--ds-background-accent-blue-subtler-pressed) !important;
+}
+
+.inactiveLink {
+ color: var(--ds-background-accent-gray-subtlest) !important;
+}
+
+.sidebarTitle {
+ color: var(--ds-background-accent-gray-subtlest) !important;
+ font-weight: 600;
+}

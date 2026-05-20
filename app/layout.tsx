@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarLayout } from "./components/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "fastbootstrap/dist/css/fastbootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
 
 /*const geistSans = Geist({
@@ -28,7 +30,7 @@ export default function RootLayout({
     <html
       lang="pt-br"
     >
-      <body className="min-vh-100">
+      <body className="">
         <SidebarLayout>{children}</SidebarLayout>
       </body>
     </html>
