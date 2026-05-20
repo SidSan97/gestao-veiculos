@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { SidebarLayout } from "./components/sidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "fastbootstrap/dist/css/fastbootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
-
-/*const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});*/
+import Swal from 'sweetalert2'
 
 export const metadata: Metadata = {
   title: "Gestão de Veículos",
