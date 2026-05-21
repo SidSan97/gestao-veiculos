@@ -1,18 +1,21 @@
 "use client";
 
 import MultasForm, {
+  type MultaApi,
   type MultaFormState,
   appendMultasToFormData,
   buildMultasPayload,
+  multaFromApi,
   multasNeedMultipart,
   validateMultas,
 } from "@/app/components/multas-form";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:8000/api/veiculos";
+const API_URL = "/api/veiculos";
 
 const ESTADOS = [
   { value: "novo", label: "Novo" },
@@ -62,6 +65,38 @@ const initialState: FormState = {
   observacoes: "",
 };
 
+export type VeiculoEdit = {
+  id: number;
+  marca: string;
+  modelo: string;
+  cor: string;
+  ano: number;
+  placa: string;
+  estado: string;
+  preco: string;
+  km: number;
+  transmissao: string;
+  motor: string;
+  observacoes: string | null;
+  multas?: MultaApi[];
+};
+
+function veiculoToFormState(veiculo: VeiculoEdit): FormState {
+  return {
+    marca: veiculo.marca,
+    modelo: veiculo.modelo,
+    cor: veiculo.cor,
+    ano: String(veiculo.ano),
+    placa: veiculo.placa,
+    estado: veiculo.estado,
+    preco: veiculo.preco,
+    km: String(veiculo.km),
+    transmissao: veiculo.transmissao,
+    motor: veiculo.motor,
+    observacoes: veiculo.observacoes ?? "",
+  };
+}
+
 function appendVeiculoToFormData(body: FormData, payload: VeiculoPayload) {
   Object.entries(payload).forEach(([key, value]) => {
     if (value !== null && value !== undefined) {
@@ -70,11 +105,22 @@ function appendVeiculoToFormData(body: FormData, payload: VeiculoPayload) {
   });
 }
 
-export default function CadastrarVeiculoForm() {
+type CadastrarVeiculoFormProps = {
+  veiculo?: VeiculoEdit;
+};
+
+export default function CadastrarVeiculoForm({
+  veiculo,
+}: CadastrarVeiculoFormProps) {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>(initialState);
+  const isEdit = Boolean(veiculo);
+  const [form, setForm] = useState<FormState>(() =>
+    veiculo ? veiculoToFormState(veiculo) : initialState
+  );
   const [imagem, setImagem] = useState<File | null>(null);
-  const [multas, setMultas] = useState<MultaFormState[]>([]);
+  const [multas, setMultas] = useState<MultaFormState[]>(() =>
+    veiculo?.multas?.map(multaFromApi) ?? []
+  );
   const [submitting, setSubmitting] = useState(false);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -111,13 +157,32 @@ export default function CadastrarVeiculoForm() {
       observacoes: form.observacoes.trim() || null,
     };
 
-    const multasPayload = buildMultasPayload(multas);
+    const multasPayload = buildMultasPayload(multas, { withIds: isEdit });
     const useMultipart = Boolean(imagem) || multasNeedMultipart(multas);
 
     try {
       let res: Response;
 
-      if (useMultipart) {
+      if (isEdit && veiculo) {
+        const url = `${API_URL}/${veiculo.id}`;
+
+        if (useMultipart) {
+          const body = new FormData();
+          appendVeiculoToFormData(body, payload);
+          if (imagem) body.append("imagem", imagem);
+          appendMultasToFormData(body, multas, multasPayload);
+          res = await fetch(url, { method: "PUT", body });
+        } else {
+          res = await fetch(url, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...payload,
+              multas: multasPayload,
+            }),
+          });
+        }
+      } else if (useMultipart) {
         const body = new FormData();
         appendVeiculoToFormData(body, payload);
         if (imagem) body.append("imagem", imagem);
@@ -135,7 +200,9 @@ export default function CadastrarVeiculoForm() {
       }
 
       if (!res.ok) {
-        let message = "Não foi possível cadastrar o veículo.";
+        let message = isEdit
+          ? "Não foi possível atualizar o veículo."
+          : "Não foi possível cadastrar o veículo.";
         try {
           const json = await res.json();
           if (typeof json.message === "string") message = json.message;
@@ -152,7 +219,7 @@ export default function CadastrarVeiculoForm() {
 
       await Swal.fire({
         icon: "success",
-        title: "Veículo cadastrado",
+        title: isEdit ? "Veículo atualizado" : "Veículo cadastrado",
         text: `${payload.marca} ${payload.modelo} (${placa})${multasMsg}`,
         confirmButtonText: "Ver detalhes",
       });
@@ -161,10 +228,14 @@ export default function CadastrarVeiculoForm() {
       router.refresh();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Erro ao cadastrar o veículo.";
+        err instanceof Error
+          ? err.message
+          : isEdit
+            ? "Erro ao atualizar o veículo."
+            : "Erro ao cadastrar o veículo.";
       await Swal.fire({
         icon: "error",
-        title: "Falha no cadastro",
+        title: isEdit ? "Falha na edição" : "Falha no cadastro",
         text: message,
       });
     } finally {
@@ -180,9 +251,13 @@ export default function CadastrarVeiculoForm() {
             <i className="bi bi-arrow-left me-1" />
             Voltar
           </Link>
-          <h1 className="h3 mb-0">Cadastrar veículo</h1>
+          <h1 className="h3 mb-0">
+            {isEdit ? "Editar veículo" : "Cadastrar veículo"}
+          </h1>
           <p className="text-body-secondary small mb-0">
-            Preencha os dados do veículo para incluí-lo na frota.
+            {isEdit
+              ? `Alterando ${veiculo?.marca} ${veiculo?.modelo} · placa ${veiculo?.placa}`
+              : "Preencha os dados do veículo para incluí-lo na frota."}
           </p>
         </div>
       </div>
@@ -238,6 +313,7 @@ export default function CadastrarVeiculoForm() {
                     pattern="[A-Za-z]{3}[0-9][A-Za-z0-9][0-9]{2}"
                     title="Placa no padrão Mercosul (ex.: ABC1D23)"
                     value={form.placa}
+                    readOnly={isEdit}
                     onChange={(e) =>
                       updateField("placa", e.target.value.toUpperCase())
                     }
@@ -424,7 +500,7 @@ export default function CadastrarVeiculoForm() {
               ) : (
                 <>
                   <i className="bi bi-check-lg me-1" />
-                  Cadastrar veículo
+                  {isEdit ? "Salvar alterações" : "Cadastrar veículo"}
                 </>
               )}
             </button>

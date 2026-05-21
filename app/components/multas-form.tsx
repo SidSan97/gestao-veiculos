@@ -8,6 +8,7 @@ const MULTA_STATUS = [
 
 export type MultaFormState = {
   id: string;
+  backendId?: number;
   descricao: string;
   valor: string;
   data: string;
@@ -18,6 +19,7 @@ export type MultaFormState = {
 };
 
 export type MultaPayload = {
+  id?: number;
   descricao: string;
   valor: string;
   data: string;
@@ -25,6 +27,34 @@ export type MultaPayload = {
   status: string;
   observacoes: string | null;
 };
+
+export type MultaApi = {
+  id: number;
+  descricao: string;
+  valor: string;
+  data: string;
+  cidade: string;
+  status: string;
+  observacoes: string | null;
+};
+
+export function multaFromApi(multa: MultaApi): MultaFormState {
+  const data = multa.data.includes("T")
+    ? multa.data.slice(0, 10)
+    : multa.data.split(" ")[0];
+
+  return {
+    id: `multa-${multa.id}`,
+    backendId: multa.id,
+    descricao: multa.descricao,
+    valor: String(multa.valor),
+    data,
+    cidade: multa.cidade,
+    status: multa.status,
+    observacoes: multa.observacoes ?? "",
+    imagem: null,
+  };
+}
 
 export function createMulta(): MultaFormState {
   return {
@@ -50,10 +80,14 @@ export function multaHasContent(m: MultaFormState) {
   );
 }
 
-export function buildMultasPayload(list: MultaFormState[]): MultaPayload[] {
+export function buildMultasPayload(
+  list: MultaFormState[],
+  options?: { withIds?: boolean }
+): MultaPayload[] {
   return list
     .filter((m) => m.descricao.trim())
     .map((m) => ({
+      ...(options?.withIds && m.backendId != null ? { id: m.backendId } : {}),
       descricao: m.descricao.trim(),
       valor: m.valor.trim(),
       data: m.data,

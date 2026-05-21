@@ -105,14 +105,15 @@ export default function Table({ cars }: { cars: Car[] }) {
                 <td>{car.cor}</td>
                 <td>{car.multas.length > 0 ? "Sim" : "Não"}</td>
                 <td className="text-nowrap">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/editar-veiculo/${car.placa}`}
                     className="btn btn-primary"
                     title="Editar"
                     aria-label={`Editar ${car.placa}`}
                   >
                     <i className="bi bi-pencil" />
-                  </button>
+                  </Link>
+                  
                   <button
                     type="button"
                     className="btn btn-danger ms-2"
