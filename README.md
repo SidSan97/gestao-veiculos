@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gestão de Veículos
 
-## Getting Started
+Frontend web para cadastro e administração de veículos e multas, desenvolvido com **[Next.js](https://nextjs.org)** (App Router), React e TypeScript. A interface consome uma API REST em Laravel e oferece listagem, detalhes, cadastro com multas opcionais e exclusão de registros.
 
-First, run the development server:
+## Sobre o projeto
+
+O sistema permite visualizar a frota em uma tabela, abrir o detalhe de cada veículo (dados, imagem e histórico de multas), cadastrar novos veículos com formulário completo e registrar multas no mesmo fluxo. A exclusão passa por rotas internas do Next (`app/api`), que fazem proxy para o backend — o navegador não fala diretamente com o Laravel nessas operações.
+
+A UI usa Bootstrap 5, FastBootstrap e Bootstrap Icons, com tema escuro nas telas principais e feedback via SweetAlert2.
+
+### Funcionalidades
+
+- Listagem de veículos com indicação de multas
+- Página de detalhes por placa
+- Cadastro de veículo (dados, imagem opcional, multas dinâmicas)
+- Exclusão com confirmação
+- Sidebar responsiva (desktop e mobile)
+
+## Stack
+
+| Camada | Tecnologia |
+|--------|------------|
+| Framework | **Next.js 16** (App Router) |
+| UI | React 19, TypeScript, Bootstrap 5 |
+| API (backend) | Laravel — `https://github.com/SidSan97/api-veiculos-laravel` em `http://localhost:8000` |
+
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) 20+
+- API Laravel rodando em `http://localhost:8000` (projeto separado)
+
+## Clone e execução
 
 ```bash
+git clone <url-do-repositorio>
+cd gestao_veiculos
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Variáveis de ambiente (opcional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Crie um `.env.local` na raiz se a API não estiver no endereço padrão:
 
-## Learn More
+```env
+BACKEND_API_URL=http://localhost:8000/api
+```
 
-To learn more about Next.js, take a look at the following resources:
+Sem esse arquivo, o projeto usa `http://localhost:8000/api` por padrão (`lib/backend.ts`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Outros comandos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build   # build de produção
+npm run start   # servidor após o build
+npm run lint    # ESLint
+```
 
-## Deploy on Vercel
+## Estrutura principal
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+app/
+  page.tsx                    # lista de veículos
+  cadastrar-veiculo/          # formulário de cadastro
+  detalhes-veiculo/[veiculo]/ # detalhes por placa
+  api/veiculos/[id]/          # rota DELETE (proxy)
+  components/                 # tabela, sidebar, multas-form
+lib/
+  backend.ts                  # URL da API Laravel
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
