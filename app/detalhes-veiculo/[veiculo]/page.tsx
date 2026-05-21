@@ -88,7 +88,7 @@ export default async function DetalhesVeiculo(
           <h1 className="h3 mb-0">
             {car.marca} {car.modelo}
           </h1>
-          <p className="text-secondary mb-0 small">
+          <p className="mb-0 small">
             Placa <span className="font-monospace">{car.placa}</span> · ID #{car.id}
           </p>
         </div>
@@ -137,31 +137,31 @@ export default async function DetalhesVeiculo(
               <div className="row g-3">
                 <div className="col-sm-6 col-md-4">
                   <div className="border border-secondary rounded p-3 h-100">
-                    <div className="text-secondary small">Ano</div>
+                    <div className="small">Ano</div>
                     <div className="fw-semibold">{car.ano}</div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-4">
                   <div className="border border-secondary rounded p-3 h-100">
-                    <div className="text-secondary small">Cor</div>
+                    <div className=" small">Cor</div>
                     <div className="fw-semibold">{car.cor}</div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-4">
                   <div className="border border-secondary rounded p-3 h-100">
-                    <div className="text-secondary small">Quilometragem</div>
+                    <div className="small">Quilometragem</div>
                     <div className="fw-semibold">{formatKm(car.km)}</div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-4">
                   <div className="border border-secondary rounded p-3 h-100">
-                    <div className="text-secondary small">Transmissão</div>
+                    <div className="small">Transmissão</div>
                     <div className="fw-semibold">{car.transmissao}</div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-8">
                   <div className="border border-secondary rounded p-3 h-100">
-                    <div className="text-secondary small">Motor</div>
+                    <div className="small">Motor</div>
                     <div className="fw-semibold">{car.motor}</div>
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export default async function DetalhesVeiculo(
 
               <hr className="border-secondary my-3" />
 
-              <div className="row small text-secondary">
+              <div className="row small">
                 <div className="col-md-6">
                   <i className="bi bi-calendar-plus me-1" />
                   Cadastro: {formatData(car.created_at)}

@@ -1,5 +1,5 @@
 .mobileSidebar {
- background-color: var(--ds-background-neutral-bold);
+ background-color: var(--ds-background-neutral-bold) !important;
 }
 
 .desktopSidebar {
